@@ -390,7 +390,7 @@ export default function App() {
             onClick={() => setTheme((value) => (value === 'lamp' ? 'daylight' : 'lamp'))}
             aria-pressed={theme === 'daylight'}
             title={UI.theme}
-            aria-label={UI.theme}
+            aria-label={`${UI.theme}: ${theme === 'lamp' ? UI.themeDaylight : UI.themeLamp}`}
           >
             <Icon name={theme === 'lamp' ? 'sun' : 'moon'} size={17} />
             <span>{theme === 'lamp' ? UI.themeDaylight : UI.themeLamp}</span>
