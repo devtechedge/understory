@@ -11,7 +11,7 @@ import {
   pruneSpecimen,
   setSeason,
 } from '../sim/engine';
-import { parseSeedPacket, seedPacketJSON } from '../sim/serialization';
+import { parseSeedPacket, seedPacketJSON, SeedPacketError } from '../sim/serialization';
 import { CATCHUP_CAP_MS, MINUTE_MS } from '../sim/time';
 import type { Season, SpeciesId, World } from '../sim/types';
 import { loadSavedWorld, saveWorld, type SaveResult } from '../persist/storage';
@@ -53,6 +53,11 @@ export interface PruneActionResult {
   part?: string;
 }
 
+export interface ImportResult {
+  ok: boolean;
+  reason?: string;
+}
+
 export interface UseVitrine {
   world: World | null;
   status: LoadStatus;
@@ -65,7 +70,7 @@ export interface UseVitrine {
   mist: () => { moisture: number; logged: boolean } | null;
   changeSeason: (season: Season) => void;
   plantCuttingAt: (cuttingId: string) => PlantResult;
-  importText: (text: string) => { ok: boolean };
+  importText: (text: string) => ImportResult;
   exportPacket: () => string | null;
   findFreeSpot: () => number | null;
 }
@@ -295,15 +300,18 @@ export function useVitrine(): UseVitrine {
   );
 
   const importText = useCallback(
-    (text: string): { ok: boolean } => {
+    (text: string): ImportResult => {
       try {
         const parsed = parseSeedPacket(text);
         const next = noteImported(parsed);
         commit(next);
         queueSave();
         return { ok: true };
-      } catch {
-        return { ok: false };
+      } catch (error) {
+        return {
+          ok: false,
+          ...(error instanceof SeedPacketError ? { reason: error.message } : {}),
+        };
       }
     },
     [commit, queueSave],

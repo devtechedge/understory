@@ -18,7 +18,7 @@ export function Herbarium({
   world: World;
   onClose: () => void;
   onExport: () => void;
-  onImport: (text: string) => boolean;
+  onImport: (text: string) => { ok: boolean; reason?: string };
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -31,9 +31,9 @@ export function Herbarium({
     }
     try {
       const text = await file.text();
-      const ok = onImport(text);
-      if (ok) onClose();
-      else setStatus(UI.importFailed);
+      const result = onImport(text);
+      if (result.ok) onClose();
+      else setStatus(result.reason ? `${UI.importFailed} ${result.reason}` : UI.importFailed);
     } catch {
       setStatus(UI.importFailed);
     }

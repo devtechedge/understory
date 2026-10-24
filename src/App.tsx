@@ -293,7 +293,7 @@ export default function App() {
         setPanel(null);
         notify(UI.importDone);
       }
-      return result.ok;
+      return result;
     },
     [vitrine, notify],
   );
