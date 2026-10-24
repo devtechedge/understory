@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { APP, SEASON_COPY, SPECIES_COPY, UI } from './content/copy';
 import { formatClock, formatDate, hourOfDay } from './sim/time';
 import type { Season, SpeciesId, Tool } from './sim/types';
@@ -8,11 +8,29 @@ import { Vitrine } from './components/Vitrine';
 import { ClimateStrip } from './components/ClimateStrip';
 import { Journal } from './components/Journal';
 import { SpecimenShelf } from './components/SpecimenShelf';
-import { HelpPanel } from './components/HelpPanel';
-import { Herbarium } from './components/Herbarium';
-import { MobileBar, PlantSheet } from './components/MobileBar';
+import { MobileBar } from './components/MobileBar';
 import type { InspectPanelState } from './components/InspectPanel';
 import { Icon } from './components/Icons';
+
+const loadHelp = () => import('./components/HelpPanel').then((module) => ({ default: module.HelpPanel }));
+const loadHerbarium = () =>
+  import('./components/Herbarium').then((module) => ({ default: module.Herbarium }));
+const loadPlantSheet = () =>
+  import('./components/PlantSheet').then((module) => ({ default: module.PlantSheet }));
+
+const HelpPanel = lazy(loadHelp);
+const Herbarium = lazy(loadHerbarium);
+const PlantSheet = lazy(loadPlantSheet);
+
+const prefetchHelp = () => {
+  void loadHelp();
+};
+const prefetchHerbarium = () => {
+  void loadHerbarium();
+};
+const prefetchPlantSheet = () => {
+  void loadPlantSheet();
+};
 
 const bootPrefs = loadPrefs();
 const bootStill = bootPrefs?.still ?? preferredStill();
@@ -377,11 +395,25 @@ export default function App() {
             <Icon name={theme === 'lamp' ? 'sun' : 'moon'} size={17} />
             <span>{theme === 'lamp' ? UI.themeDaylight : UI.themeLamp}</span>
           </button>
-          <button type="button" className="chrome-btn" onClick={openHerbarium} aria-label={UI.herbarium}>
+          <button
+            type="button"
+            className="chrome-btn"
+            onClick={openHerbarium}
+            onPointerEnter={prefetchHerbarium}
+            onFocus={prefetchHerbarium}
+            aria-label={UI.herbarium}
+          >
             <Icon name="shelf" size={17} />
             <span>{UI.herbarium}</span>
           </button>
-          <button type="button" className="chrome-btn" onClick={() => setOverlay('help')} aria-label={UI.help}>
+          <button
+            type="button"
+            className="chrome-btn"
+            onClick={() => setOverlay('help')}
+            onPointerEnter={prefetchHelp}
+            onFocus={prefetchHelp}
+            aria-label={UI.help}
+          >
             <Icon name="help" size={17} />
             <span>{UI.help}</span>
           </button>
@@ -460,7 +492,12 @@ export default function App() {
       </footer>
 
       {isMobile ? (
-        <MobileBar tool={tool} onTool={setTool} onPlant={() => setPlantSheet(true)} />
+        <MobileBar
+          tool={tool}
+          onTool={setTool}
+          onPlant={() => setPlantSheet(true)}
+          onPlantIntent={prefetchPlantSheet}
+        />
       ) : null}
 
       {immersed ? (
@@ -475,22 +512,34 @@ export default function App() {
         </button>
       ) : null}
 
-      <HelpPanel open={overlay === 'help'} onClose={() => setOverlay(null)} />
-      <Herbarium
-        open={overlay === 'herbarium'}
-        world={world}
-        onClose={() => setOverlay(null)}
-        onExport={handleExport}
-        onImport={handleImport}
-      />
-      <PlantSheet
-        open={plantSheet}
-        onClose={() => setPlantSheet(false)}
-        onPlant={(species) => {
-          handlePlant(species);
-          setPlantSheet(false);
-        }}
-      />
+      {overlay === 'help' ? (
+        <Suspense fallback={null}>
+          <HelpPanel open onClose={() => setOverlay(null)} />
+        </Suspense>
+      ) : null}
+      {overlay === 'herbarium' ? (
+        <Suspense fallback={null}>
+          <Herbarium
+            open
+            world={world}
+            onClose={() => setOverlay(null)}
+            onExport={handleExport}
+            onImport={handleImport}
+          />
+        </Suspense>
+      ) : null}
+      {plantSheet ? (
+        <Suspense fallback={null}>
+          <PlantSheet
+            open
+            onClose={() => setPlantSheet(false)}
+            onPlant={(species) => {
+              handlePlant(species);
+              setPlantSheet(false);
+            }}
+          />
+        </Suspense>
+      ) : null}
 
       {toast ? (
         <div className="toast" role="status" aria-live="polite" key={toast.id}>

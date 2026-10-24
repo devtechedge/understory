@@ -1,18 +1,17 @@
-import { SPECIES_COPY, UI } from '../content/copy';
-import { SPECIES_IDS } from '../sim/species';
-import type { SpeciesId, Tool } from '../sim/types';
-import { SeedPacketArt } from './Art';
-import { Dialog } from './Dialog';
+import { UI } from '../content/copy';
+import type { Tool } from '../sim/types';
 import { Icon } from './Icons';
 
 export function MobileBar({
   tool,
   onTool,
   onPlant,
+  onPlantIntent,
 }: {
   tool: Tool;
   onTool: (tool: Tool) => void;
   onPlant: () => void;
+  onPlantIntent?: () => void;
 }) {
   return (
     <nav className="mobile-bar" aria-label={UI.tools}>
@@ -43,44 +42,16 @@ export function MobileBar({
         <Icon name="mist" />
         <span>{UI.toolMist}</span>
       </button>
-      <button type="button" className="bar-btn bar-plant" onClick={onPlant}>
+      <button
+        type="button"
+        className="bar-btn bar-plant"
+        onClick={onPlant}
+        onPointerEnter={onPlantIntent}
+        onFocus={onPlantIntent}
+      >
         <Icon name="leaf" />
         <span>{UI.mobilePlant}</span>
       </button>
     </nav>
-  );
-}
-
-export function PlantSheet({
-  open,
-  onClose,
-  onPlant,
-}: {
-  open: boolean;
-  onClose: () => void;
-  onPlant: (species: SpeciesId) => void;
-}) {
-  return (
-    <Dialog open={open} onClose={onClose} title={UI.mobilePlant} eyebrow={UI.specimens} className="plant-sheet">
-      <p className="dialog-intro">{UI.specimensNote}</p>
-      <div className="plant-sheet-grid">
-        {SPECIES_IDS.map((speciesId) => {
-          const copy = SPECIES_COPY[speciesId];
-          return (
-            <button
-              type="button"
-              className="plant-sheet-card"
-              key={speciesId}
-              onClick={() => onPlant(speciesId)}
-            >
-              <SeedPacketArt speciesId={speciesId} className="plant-sheet-art" />
-              <span className="packet-label mono">{copy.packet}</span>
-              <span className="packet-name">{copy.common}</span>
-              <span className="packet-line">{copy.packetLine}</span>
-            </button>
-          );
-        })}
-      </div>
-    </Dialog>
   );
 }
