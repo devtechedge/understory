@@ -174,9 +174,9 @@ https://understory-vert.vercel.app.
 
 - Production Lighthouse desktop: 100 performance, 100 accessibility,
   100 best practices, 100 SEO. LCP 0.4s, TBT 0ms, CLS 0.001.
-- Production Lighthouse mobile, median of three runs: 98 performance,
-  100 accessibility, 100 best practices, 100 SEO. LCP 2.0s, TBT 20ms,
-  CLS 0.
+- Production Lighthouse mobile, three runs: 98 performance on every run,
+  100 accessibility, 100 best practices, 100 SEO. LCP 2.0-2.1s, TBT 20-50ms,
+  CLS 0-0.001.
 - 52 unit tests and 16 browser journeys passing. Axe reports zero serious or
   critical findings on the four checked surfaces.
 - `npm audit --omit=dev`: zero vulnerabilities.
