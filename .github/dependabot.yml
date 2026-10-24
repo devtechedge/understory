@@ -8,6 +8,10 @@ updates:
       time: "06:00"
       timezone: Asia/Kolkata
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
     groups:
       runtime:
         dependency-type: production
@@ -27,6 +31,10 @@ updates:
       time: "06:15"
       timezone: Asia/Kolkata
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
     groups:
       actions:
         patterns:
