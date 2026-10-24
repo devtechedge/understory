@@ -2526,6 +2526,8 @@ body.dialog-open {
     padding-left: 0;
     border-top: 1px solid var(--rule);
     padding-top: 18px;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 720px;
   }
   .journal-panel {
     max-height: none;
@@ -2541,6 +2543,12 @@ body.dialog-open {
     border-top: 1px solid var(--rule);
     padding-top: 18px;
     margin-top: 4px;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 640px;
+  }
+  .foot {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 90px;
   }
   .library-mobile .packet-list {
     grid-template-columns: 1fr;
