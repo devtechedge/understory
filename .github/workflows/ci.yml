@@ -14,7 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  verify:
+  quality:
+    name: quality
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -40,6 +41,21 @@ jobs:
       - name: Production build
         run: npm run build
 
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
@@ -53,3 +69,21 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  audit:
+    name: audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
