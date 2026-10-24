@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "description": "A living browser terrarium: a slow micro-forest you plant, tend and return to.",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite --port 5220",
     "build": "tsc --noEmit && vite build",
