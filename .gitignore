@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+test-results/
+playwright-report/
+blob-report/
+qa-shots/
+lighthouse/
+.vercel/
+.env
+.env.*
+*.local
+*.tsbuildinfo
+.DS_Store
