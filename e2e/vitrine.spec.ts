@@ -135,11 +135,18 @@ test('a seed packet exports and imports', async ({ page }) => {
     buffer: Buffer.from('{not json'),
   });
   await expect(page.locator('.herbarium-dialog')).toBeVisible();
-  await expect(page.locator('.form-status')).toContainText(/could not be read/i);
+  await expect(page.locator('.form-status')).toContainText(/not valid JSON/i);
 });
 
 test('keyboard shortcuts and immersion work', async ({ page }) => {
   await waitReady(page);
+  const helpButton = page.locator('.masthead').getByRole('button', { name: 'Help' });
+  await helpButton.click();
+  await expect(page.locator('.help-dialog')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.help-dialog')).toHaveCount(0);
+  await expect(helpButton).toBeFocused();
+
   await page.keyboard.press('Shift+/');
   await expect(page.locator('.help-dialog')).toBeVisible();
   await page.keyboard.press('Escape');
@@ -157,6 +164,41 @@ test('keyboard shortcuts and immersion work', async ({ page }) => {
   await page.getByTestId('vitrine-canvas').focus();
   await page.keyboard.press('Space');
   await expect(page.locator('.climate').getByRole('button', { name: 'Resume' })).toBeVisible();
+});
+
+test('theme choice survives a reload', async ({ page }) => {
+  await waitReady(page);
+  const themeButton = page
+    .locator('.masthead')
+    .getByRole('button', { name: /Change the room light/ });
+  await themeButton.click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'daylight');
+
+  await page.waitForTimeout(300);
+  await page.reload();
+  await page.waitForFunction(() => Boolean(window.__understory?.getWorld()));
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'daylight');
+  await expect(themeButton).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('320px stays within the viewport and can plant', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await waitReady(page);
+  const before = await page.evaluate(
+    () => document.documentElement.scrollWidth - window.innerWidth,
+  );
+  expect(before).toBeLessThanOrEqual(0);
+  await expect(page.locator('.mobile-bar')).toBeVisible();
+  await page.locator('.mobile-bar').getByRole('button', { name: 'Plant' }).click();
+  await expect(page.locator('.plant-sheet')).toBeVisible();
+  await page.locator('.plant-sheet-card').first().click();
+  await expect
+    .poll(() => page.evaluate(() => window.__understory!.getWorld()!.entities.length))
+    .toBe(1);
+  const after = await page.evaluate(
+    () => document.documentElement.scrollWidth - window.innerWidth,
+  );
+  expect(after).toBeLessThanOrEqual(0);
 });
 
 test('mobile plants from the sheet with no horizontal overflow', async ({ page }) => {
