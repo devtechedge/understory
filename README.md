@@ -184,8 +184,8 @@ https://understory-vert.vercel.app.
   three self-hosted Latin variable font subsets.
 - Security headers live on Vercel: CSP, HSTS, nosniff, frame denial, referrer
   policy, permissions policy and cross-origin isolation headers.
-- Vercel auto-deploy is git-connected. The production deployment for commit
-  `6c1b8d9` was created from a push to `main`.
+- Vercel auto-deploy is git-connected. Every push to `main` creates a
+  production deployment, and the live alias serves the latest commit.
 
 CI status is the badge above. Workflow runs are public.
 
