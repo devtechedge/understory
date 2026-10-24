@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest a careful addition to the vitrine.
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is missing or awkward today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: The proposal
+      description: What should change, and why does it fit a slow browser terrarium?
+    validations:
+      required: true
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints
+      options:
+        - label: This keeps the app local, deterministic, and network-free.
+          required: true
+        - label: This does not add accounts, analytics, or a backend.
+          required: true

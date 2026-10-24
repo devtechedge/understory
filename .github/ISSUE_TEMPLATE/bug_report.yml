@@ -1,0 +1,51 @@
+name: Bug report
+description: Report something that is broken or confusing.
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Understory keeps its world in your browser only. Please do not attach a
+        seed packet unless you are comfortable sharing that vitrine.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you see, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the vitrine
+        2. Plant a fern
+        3. Advance to night
+    validations:
+      required: true
+  - type: input
+    id: build
+    attributes:
+      label: Build
+      description: The commit, release, or date shown on the live site.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - Desktop browser
+        - Mobile browser
+        - Keyboard or screen reader
+        - Reduced motion
+        - Seed packet export or import
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: Paste any errors. Remove personal data first.
+      render: text
