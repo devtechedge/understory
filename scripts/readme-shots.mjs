@@ -46,14 +46,17 @@ await desktop.page.locator('.specimen-row').first().click();
 await desktop.page.waitForTimeout(500);
 await desktop.page.screenshot({ path: `${OUT}/03-specimen-card.png` });
 await desktop.page.keyboard.press('Escape');
-await desktop.page.locator('#journal').scrollIntoViewIfNeeded();
-await desktop.page.waitForTimeout(400);
-await desktop.page.screenshot({ path: `${OUT}/04-journal.png` });
 await desktop.page.evaluate(() => window.scrollTo(0, 0));
 await desktop.page.locator('.masthead').getByRole('button', { name: 'Herbarium' }).click();
-await desktop.page.locator('.herbarium-dialog').waitFor({ state: 'visible' });
+const herbarium = desktop.page.locator('.herbarium-dialog');
+await herbarium.waitFor({ state: 'visible' });
 await desktop.page.waitForTimeout(500);
 await desktop.page.screenshot({ path: `${OUT}/05-herbarium.png` });
+await herbarium.evaluate((element) => {
+  element.scrollTop = element.scrollHeight;
+});
+await desktop.page.waitForTimeout(500);
+await desktop.page.screenshot({ path: `${OUT}/05b-pressed.png` });
 await desktop.page.keyboard.press('Escape');
 await desktop.page.locator('.masthead').getByRole('button', { name: /Change the room light/ }).click();
 await desktop.page.waitForTimeout(700);
@@ -70,6 +73,15 @@ await mobile.page.locator('.mobile-bar').getByRole('button', { name: 'Plant' }).
 await mobile.page.locator('.plant-sheet').waitFor({ state: 'visible' });
 await mobile.page.waitForTimeout(500);
 await mobile.page.screenshot({ path: `${OUT}/09-mobile-plant-sheet.png` });
+await mobile.page.keyboard.press('Escape');
+await mobile.page.evaluate(() => {
+  const journal = document.getElementById('journal');
+  if (!journal) return;
+  const top = journal.getBoundingClientRect().top + window.scrollY - 56;
+  window.scrollTo(0, Math.max(0, top));
+});
+await mobile.page.waitForTimeout(500);
+await mobile.page.screenshot({ path: `${OUT}/04-journal.png` });
 await mobile.context.close();
 
 console.log(JSON.stringify({ base: BASE, errors }, null, 2));
